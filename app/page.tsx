@@ -1,37 +1,20 @@
-"use client";
+import FlowScene from "@/components/ReactFlowScene";
+import FlowProvider from "@/provider/ReactFlowProvider";
+import React from "react";
 
-import { ReactFlow } from "@xyflow/react";
-import { Slide } from "@/components/Slide";
-
-const nodeTypes = {
-  slide: Slide,
-};
-
-export default function App() {
-  const nodes = [
-    {
-      id: "0",
-      type: "slide",
-      position: { x: 0, y: 0 },
-      data: { source: "# Hello, React Flow!" },
-    },
-    {
-      id: "1",
-      type: "slide",
-      position: { x: 400, y: 0 },
-      data: { source: "Second-node" },
-    },
-    {
-      id: "2",
-      type: "slide",
-      position: { x: 800, y: 0 },
-      data: { source: "Third-node" },
-    },
-  ];
-
+function Main() {
   return (
     <>
-      <ReactFlow nodes={nodes} nodeTypes={nodeTypes} fitView minZoom={0.1} />
+      <div className="flex flex-col items-center justify-center">
+        <div>Main</div>
+        <div className="w-[900px] h-[900px] bg-white">
+          <FlowProvider>
+            <FlowScene />
+          </FlowProvider>
+        </div>
+      </div>
     </>
   );
 }
+
+export default Main;
