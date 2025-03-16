@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import type { NodeData } from "@/lib/types";
+import type { CustomNode } from "@/lib/types";
 
-function InputOutputNode({ data, isConnectable }: NodeProps<NodeData>) {
+function InputOutputNode({ data, isConnectable }: NodeProps<CustomNode>) {
   return (
     <div
       className="relative px-4 py-2 border-2 shadow-sm border-primary/50"

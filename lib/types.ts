@@ -1,11 +1,19 @@
 import { Node } from "@xyflow/react";
 
 // Node types
-export type NodeType = "default" | "process" | "decision" | "inputOutput";
+export type NodeType =
+  | "default"
+  | "process"
+  | "decision"
+  | "inputOutput"
+  | "group"; // Add 'group' for parent nodes
 
-export type NodeData = Node<{
-  type: NodeType; // Add the type property
+export type NodeData = {
+  type: NodeType;
   label: string;
-  description?: string; // Make description optional
-  color?: string; // Make color optional
-}>;
+  description?: string;
+  color?: string;
+  parentId?: string; // For child nodes
+};
+
+export type CustomNode = Node<NodeData>;

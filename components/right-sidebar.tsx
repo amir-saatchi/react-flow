@@ -1,23 +1,22 @@
 "use client";
 
-import type { Node } from "@xyflow/react";
-import type { NodeData } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Settings } from "lucide-react";
+import { useStore } from "@/store/store";
+import { useShallow } from "zustand/shallow";
 
-interface RightSidebarProps {
-  selectedNode: Node<NodeData> | null;
-  updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
-}
+export default function RightSidebar() {
+  const { selectedNode, updateNodeData } = useStore(
+    useShallow((state) => ({
+      selectedNode: state.selectedNode,
+      updateNodeData: state.updateNodeData,
+    }))
+  );
 
-export default function RightSidebar({
-  selectedNode,
-  updateNodeData,
-}: RightSidebarProps) {
   if (!selectedNode) {
     return (
       <div className="w-64 h-full border-l bg-background">

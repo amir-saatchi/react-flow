@@ -1,177 +1,128 @@
+// BlockDiagramEditor.tsx
 "use client";
 
-import type React from "react";
-
-import { useState, useCallback, useRef, type DragEvent } from "react";
+import React, { useCallback, useRef } from "react";
+import { DragEvent } from "react";
 import {
   ReactFlow,
   ReactFlowProvider,
-  type ReactFlowInstance,
-  type Node,
-  type Edge,
   Controls,
   Background,
   BackgroundVariant,
-  type Connection,
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  type NodeTypes,
+  useReactFlow,
   Panel,
 } from "@xyflow/react";
-import "reactflow/dist/style.css";
+import "@xyflow/react/dist/style.css";
 
-import type { NodeData, NodeType } from "@/lib/types";
+import type { CustomNode, NodeType } from "@/lib/types";
 import LeftSidebar from "./left-sidebar";
 import RightSidebar from "./right-sidebar";
-import DefaultNode from "./nodes/default-node";
-import ProcessNode from "./nodes/process-node";
-import DecisionNode from "./nodes/decision-node";
-import InputOutputNode from "./nodes/input-output-node";
+import { useStore } from "@/store/store";
+import { useShallow } from "zustand/shallow";
+import defaultNode from "./nodes/default-node";
+import processNode from "./nodes/process-node";
+import decisionNode from "./nodes/decision-node";
+import inputOutputNode from "./nodes/input-output-node";
 
 // Define custom node types
-const nodeTypes: NodeTypes = {
-  default: DefaultNode,
-  process: ProcessNode,
-  decision: DecisionNode,
-  inputOutput: InputOutputNode,
+const nodeTypes = {
+  default: defaultNode,
+  process: processNode,
+  decision: decisionNode,
+  inputOutput: inputOutputNode,
 };
 
-// Initial nodes and edges
-const initialNodes: Node<NodeData>[] = [];
-const initialEdges: Edge[] = [];
-
 export default function BlockDiagramEditor() {
-  // React Flow states
+  // Zustand Store
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    onNodeClick,
+    onPaneClick,
+    onDragOver,
+    createNode,
+    selectedNode,
+    updateNodeData,
+  } = useStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      onNodesChange: state.onNodesChange,
+      onEdgesChange: state.onEdgesChange,
+      onConnect: state.onConnect,
+      onNodeClick: state.onNodeClick,
+      onPaneClick: state.onPaneClick,
+      onDragOver: state.onDragOver,
+      createNode: state.createNode,
+      selectedNode: state.selectedNode,
+      updateNodeData: state.updateNodeData,
+    }))
+  );
+
+  // React Flow hook for converting screen coordinates to flow coordinates
+  const { screenToFlowPosition } = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes, onNodesChange] =
-    useNodesState<NodeData>(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [reactFlowInstance, setReactFlowInstance] =
-    useState<ReactFlowInstance | null>(null);
-  const [selectedNode, setSelectedNode] = useState<Node<NodeData> | null>(null);
-
-  // Handle node selection
-  const onNodeClick = useCallback(
-    (_: React.MouseEvent, node: Node<NodeData>) => {
-      setSelectedNode(node);
-    },
-    []
-  );
-
-  // Handle node deselection
-  const onPaneClick = useCallback(() => {
-    setSelectedNode(null);
-  }, []);
-
-  // Handle edge connections
-  const onConnect = useCallback(
-    (params: Connection) => {
-      setEdges((eds) => addEdge({ ...params, animated: true }, eds));
-    },
-    [setEdges]
-  );
-
-  // Handle node property updates
-  const updateNodeData = useCallback(
-    (nodeId: string, data: Partial<NodeData>) => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id === nodeId) {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                ...data,
-              },
-            };
-          }
-          return node;
-        })
-      );
-    },
-    [setNodes]
-  );
-
-  // Handle drag over event
-  const onDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
-  }, []);
 
   // Handle drop event
   const onDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
       event.preventDefault();
 
-      if (!reactFlowInstance || !reactFlowWrapper.current) return;
-
-      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      // Get the node type and label from the drag event
       const type = event.dataTransfer.getData(
         "application/reactflow"
       ) as NodeType;
       const label = event.dataTransfer.getData("application/nodeName");
 
-      // Check if the dropped element is valid
+      // Ensure the node type is valid
       if (typeof type === "undefined" || !type) {
         return;
       }
 
-      const position = reactFlowInstance.flowToScreenPosition({
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
+      // Convert screen coordinates to flow coordinates
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
       });
 
-      // Create a new node
-      const newNode: NodeData = {
-        id: `node_${Date.now()}`,
-        position,
-        data: {
-          label:
-            label || `${type.charAt(0).toUpperCase() + type.slice(1)} Node`,
-          description: "",
-          color: "#ffffff",
-        },
-      };
-
-      setNodes((nds) => nds.concat(newNode));
+      // Create and add the new node using the store action
+      createNode(type, position, label);
     },
-    [reactFlowInstance, setNodes]
+    [screenToFlowPosition, createNode]
   );
 
   return (
     <div className="flex h-screen w-full">
       <LeftSidebar />
       <div className="flex-1 h-full" ref={reactFlowWrapper}>
-        <ReactFlowProvider>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onInit={setReactFlowInstance}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onNodeClick={onNodeClick}
-            onPaneClick={onPaneClick}
-            nodeTypes={nodeTypes}
-            fitView
-            snapToGrid
-            snapGrid={[15, 15]}
-          >
-            <Controls />
-            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-            <Panel position="top-center">
-              <h1 className="text-xl font-bold">Block Diagram Editor</h1>
-            </Panel>
-          </ReactFlow>
-        </ReactFlowProvider>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onNodeClick={onNodeClick}
+          onPaneClick={onPaneClick}
+          nodeTypes={nodeTypes}
+          fitView
+          snapToGrid
+          snapGrid={[15, 15]}
+        >
+          <Controls /> {/* Add controls for zooming and panning */}
+          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />{" "}
+          {/* Add a dotted background */}
+          <Panel position="top-center">
+            <h1 className="text-xl font-bold">Block Diagram Editor</h1>{" "}
+            {/* Add a title */}
+          </Panel>
+        </ReactFlow>
       </div>
-      <RightSidebar
-        selectedNode={selectedNode}
-        updateNodeData={updateNodeData}
-      />
+      <RightSidebar />
     </div>
   );
 }

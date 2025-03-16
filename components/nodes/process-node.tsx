@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import type { NodeData } from "@/lib/types";
+import type { CustomNode } from "@/lib/types";
 
-function ProcessNode({ data, isConnectable }: NodeProps<NodeData>) {
+function ProcessNode({ data, isConnectable }: NodeProps<CustomNode>) {
   return (
     <div
       className="px-4 py-2 border-2 rounded-md shadow-sm border-primary/50"
