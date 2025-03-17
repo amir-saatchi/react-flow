@@ -121,7 +121,7 @@ export const createFlowSlice: StateCreator<
       draggable: false,
       selectable: false,
       connectable: false,
-      deletable:false,
+      deletable: false,
       data: {
         type: "boundary",
         label: "Boundary",
@@ -140,43 +140,71 @@ export const createFlowSlice: StateCreator<
 
   updateNodeData: (nodeId, data) => {
     set((state) => {
-      const node = state.nodes.find((node) => node.id === nodeId);
-      if (node) {
-        node.data = { ...node.data, ...data };
-
-        if ("parentId" in data) {
-          node.parentId = data.parentId || undefined;
-          if (data.parentId) {
-            node.extent = "parent";
-          } else {
-            delete node.extent;
-          }
-        }
-      }
-    });
-  },
-
-  deleteNode: (nodeId) => {
-    if (nodeId === "boundary_node") {
-      return; // Do not delete the boundary node
-    }
-
-    set((state) => {
-      state.nodes = state.nodes.filter((node) => node.id !== nodeId);
+      state.nodes = state.nodes.map((node) =>
+        node.id === nodeId ? { ...node, data: { ...node.data, ...data } } : node
+      );
+      console.log(nodeId, data);
+      console.log("nodes", state.nodes);
     });
   },
 
   setParentNode: (nodeId, parentId) => {
     set((state) => {
-      const node = state.nodes.find((node) => node.id === nodeId);
-      if (node) {
-        node.parentId = parentId || undefined; // Assign the parentId
-        if (parentId) {
-          node.extent = "parent"; // Restrict child node movement within the parent
-        } else {
-          delete node.extent; // Remove extent if no parent
-        }
-      }
+      state.nodes = state.nodes.map((node) =>
+        node.id !== nodeId
+          ? node
+          : {
+              ...node,
+              parentId: parentId || undefined,
+              extent: parentId
+                ? "parent"
+                : [
+                    [-100, -100],
+                    [+100, +100],
+                  ],
+            }
+      );
+    });
+  },
+
+  deleteNode: (nodeId) => {
+    set((state) => {
+      state.nodes = state.nodes.filter((node) => node.id !== nodeId);
     });
   },
 });
+
+// setParentNode: (nodeId, parentId) => {
+//   set((state) => {
+//     const node = state.nodes.find((node) => node.id === nodeId);
+//     if (node) {
+//       node.parentId = parentId || undefined; // Assign the parentId
+//       if (parentId) {
+//         node.extent = "parent"; // Restrict child node movement within the parent
+//       } else {
+//         delete node.extent; // Remove extent if no parent
+//       }
+//     }
+//   });
+// },
+
+// updateNodeData: (nodeId, data) => {
+//   set((state) => {
+//     const nodeIndex = state.nodes.findIndex((node) => node.id === nodeId);
+//     if (nodeIndex !== -1) {
+//       const node = state.nodes[nodeIndex];
+//       console.log("node", { ...node });
+//       console.log("data", data);
+//       node.data = { ...node.data, ...data };
+
+//       if ("parentId" in data) {
+//         state.nodes[nodeIndex].parentId = data.parentId || undefined;
+//         if (data.parentId) {
+//           state.nodes[nodeIndex].extent = "parent";
+//         } else {
+//           delete state.nodes[nodeIndex].extent;
+//         }
+//       }
+//     }
+//   });
+// },

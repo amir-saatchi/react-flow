@@ -16,14 +16,14 @@ import "@xyflow/react/dist/style.css";
 import type { CustomNode, NodeType } from "@/lib/types";
 import LeftSidebar from "./left-sidebar";
 import RightSidebar from "./right-sidebar";
-import { useStore } from "@/store/store";
+import { StoreType, useStore } from "@/store/store";
 import { useShallow } from "zustand/shallow";
 import defaultNode from "./nodes/default-node";
 import processNode from "./nodes/process-node";
 import decisionNode from "./nodes/decision-node";
 import inputOutputNode from "./nodes/input-output-node";
 import boundaryNode from "./nodes/boundary-node";
-import groupNode from "./nodes/group-Node";
+import groupNode from "./nodes/group-node";
 
 // Define custom node types
 const nodeTypes = {
@@ -64,6 +64,21 @@ const onDrop = (
   createNode(type, position, label);
 };
 
+const selector = (state: StoreType) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  onConnect: state.onConnect,
+  onNodeClick: state.onNodeClick,
+  onPaneClick: state.onPaneClick,
+  onDragOver: state.onDragOver,
+  createNode: state.createNode,
+  selectedNode: state.selectedNode,
+  updateNodeData: state.updateNodeData,
+  initializeBoundaryNode: state.initializeBoundaryNode,
+});
+
 export default function BlockDiagramEditor() {
   useEffect(() => {
     initializeBoundaryNode();
@@ -83,22 +98,7 @@ export default function BlockDiagramEditor() {
     selectedNode,
     updateNodeData,
     initializeBoundaryNode,
-  } = useStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      edges: state.edges,
-      onNodesChange: state.onNodesChange,
-      onEdgesChange: state.onEdgesChange,
-      onConnect: state.onConnect,
-      onNodeClick: state.onNodeClick,
-      onPaneClick: state.onPaneClick,
-      onDragOver: state.onDragOver,
-      createNode: state.createNode,
-      selectedNode: state.selectedNode,
-      updateNodeData: state.updateNodeData,
-      initializeBoundaryNode: state.initializeBoundaryNode,
-    }))
-  );
+  } = useStore(useShallow(selector));
 
   // React Flow hook for converting screen coordinates to flow coordinates
   const { screenToFlowPosition } = useReactFlow();
@@ -110,8 +110,6 @@ export default function BlockDiagramEditor() {
       onDrop(event, createNode, screenToFlowPosition),
     [createNode, screenToFlowPosition]
   );
-
-  console.log("nodes", nodes);
 
   return (
     <div className="flex h-screen w-full">

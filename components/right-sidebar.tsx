@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Settings } from "lucide-react";
-import { useStore } from "@/store/store";
+import { StoreType, useStore } from "@/store/store";
 import { useShallow } from "zustand/shallow";
 import {
   Select,
@@ -16,14 +16,16 @@ import {
   SelectValue,
 } from "./ui/select";
 
+const selector = (state: StoreType) => ({
+  selectedNode: state.selectedNode,
+  updateNodeData: state.updateNodeData,
+  setParentNode: state.setParentNode,
+  nodes: state.nodes,
+});
+
 export default function RightSidebar() {
   const { selectedNode, updateNodeData, nodes, setParentNode } = useStore(
-    useShallow((state) => ({
-      selectedNode: state.selectedNode,
-      updateNodeData: state.updateNodeData,
-      setParentNode: state.setParentNode,
-      nodes: state.nodes,
-    }))
+    useShallow(selector)
   );
 
   if (!selectedNode) {
@@ -43,6 +45,8 @@ export default function RightSidebar() {
       </div>
     );
   }
+
+  console.log("Selected Node:", selectedNode);
 
   // Filter group nodes for the parent dropdown
   const groupNodes = nodes.filter((node) => node.type === "group");
@@ -87,11 +91,9 @@ export default function RightSidebar() {
               <Select
                 value={selectedNode.parentId || "none"}
                 onValueChange={(value) =>
-                  updateNodeData(
+                  setParentNode(
                     selectedNode.id,
-                    value === "none"
-                      ? { parentId: undefined }
-                      : { parentId: value }
+                    value === "none" ? null : value
                   )
                 }
               >

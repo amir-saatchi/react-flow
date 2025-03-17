@@ -5,30 +5,20 @@ import type { CustomNode } from "@/lib/types";
 
 const GroupNode = ({ data, selected }: NodeProps<CustomNode>) => {
   return (
-    <>
+    <div className="px-4 py-2 border-2 rounded-md shadow-sm
+     border-primary/50 min-w-32 min-h-48">
       <NodeResizer
         color="#ff0071"
         isVisible={selected}
-        minWidth={200}
-        minHeight={200}
+        minWidth={150}
+        minHeight={100}
       />
+      <div>{data.label}</div>
       <Handle type="target" position={Position.Top} />
       <Handle type="target" position={Position.Left} />
-      <div
-        style={{
-          padding: 10,
-          backgroundColor: data.color || "#ffffff",
-          border: "2px dashed #000",
-          borderRadius: 4,
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        {data.label}
-      </div>
       <Handle type="target" position={Position.Right} />
       <Handle type="target" position={Position.Bottom} />
-    </>
+    </div>
   );
 };
 

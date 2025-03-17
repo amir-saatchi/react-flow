@@ -10,10 +10,10 @@ export type DnDSlice = DnDState;
 
 export const createDnDSlice: StateCreator<
   StoreType,
-  [["zustand/immer", never]],
+  [["zustand/immer", never]], // Use immer middleware
   [],
   DnDSlice
-> = (set,get) => ({
+> = (set, get) => ({
   // State
   nodeType: null,
 
