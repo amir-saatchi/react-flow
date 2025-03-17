@@ -8,12 +8,21 @@ import { Separator } from "@/components/ui/separator";
 import { Settings } from "lucide-react";
 import { useStore } from "@/store/store";
 import { useShallow } from "zustand/shallow";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export default function RightSidebar() {
-  const { selectedNode, updateNodeData } = useStore(
+  const { selectedNode, updateNodeData, nodes, setParentNode } = useStore(
     useShallow((state) => ({
       selectedNode: state.selectedNode,
       updateNodeData: state.updateNodeData,
+      setParentNode: state.setParentNode,
+      nodes: state.nodes,
     }))
   );
 
@@ -34,6 +43,9 @@ export default function RightSidebar() {
       </div>
     );
   }
+
+  // Filter group nodes for the parent dropdown
+  const groupNodes = nodes.filter((node) => node.type === "group");
 
   return (
     <div className="w-64 h-full border-l bg-background">
@@ -71,25 +83,30 @@ export default function RightSidebar() {
             <Separator />
 
             <div className="space-y-2">
-              <Label htmlFor="color">Background Color</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="color"
-                  type="color"
-                  value={selectedNode.data.color}
-                  onChange={(e) =>
-                    updateNodeData(selectedNode.id, { color: e.target.value })
-                  }
-                  className="w-12 h-10 p-1"
-                />
-                <Input
-                  value={selectedNode.data.color}
-                  onChange={(e) =>
-                    updateNodeData(selectedNode.id, { color: e.target.value })
-                  }
-                  className="flex-1"
-                />
-              </div>
+              <Label htmlFor="parent">Parent Node</Label>
+              <Select
+                value={selectedNode.parentId || "none"}
+                onValueChange={(value) =>
+                  updateNodeData(
+                    selectedNode.id,
+                    value === "none"
+                      ? { parentId: undefined }
+                      : { parentId: value }
+                  )
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="No parent" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No parent</SelectItem>
+                  {groupNodes.map((node) => (
+                    <SelectItem key={node.id} value={node.id}>
+                      {node.data.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="pt-2">

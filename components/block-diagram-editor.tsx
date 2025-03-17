@@ -1,11 +1,10 @@
 // BlockDiagramEditor.tsx
 "use client";
 
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { DragEvent } from "react";
 import {
   ReactFlow,
-  ReactFlowProvider,
   Controls,
   Background,
   BackgroundVariant,
@@ -23,6 +22,8 @@ import defaultNode from "./nodes/default-node";
 import processNode from "./nodes/process-node";
 import decisionNode from "./nodes/decision-node";
 import inputOutputNode from "./nodes/input-output-node";
+import boundaryNode from "./nodes/boundary-node";
+import groupNode from "./nodes/group-Node";
 
 // Define custom node types
 const nodeTypes = {
@@ -30,9 +31,44 @@ const nodeTypes = {
   process: processNode,
   decision: decisionNode,
   inputOutput: inputOutputNode,
+  group: groupNode,
+  boundary: boundaryNode,
+};
+
+const onDrop = (
+  event: DragEvent<HTMLDivElement>,
+  createNode: (
+    type: NodeType,
+    position: { x: number; y: number },
+    label?: string
+  ) => void,
+  screenToFlowPosition: (position: { x: number; y: number }) => {
+    x: number;
+    y: number;
+  }
+) => {
+  event.preventDefault();
+  // Get the node type and label from the drag event
+  const type = event.dataTransfer.getData("application/reactflow") as NodeType;
+  const label = event.dataTransfer.getData("application/nodeName");
+  // Ensure the node type is valid
+  if (typeof type === "undefined" || !type) {
+    return;
+  }
+  // Convert screen coordinates to flow coordinates
+  const position = screenToFlowPosition({
+    x: event.clientX,
+    y: event.clientY,
+  });
+  // Create and add the new node using the store action
+  createNode(type, position, label);
 };
 
 export default function BlockDiagramEditor() {
+  useEffect(() => {
+    initializeBoundaryNode();
+  }, []);
+
   // Zustand Store
   const {
     nodes,
@@ -46,6 +82,7 @@ export default function BlockDiagramEditor() {
     createNode,
     selectedNode,
     updateNodeData,
+    initializeBoundaryNode,
   } = useStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -59,6 +96,7 @@ export default function BlockDiagramEditor() {
       createNode: state.createNode,
       selectedNode: state.selectedNode,
       updateNodeData: state.updateNodeData,
+      initializeBoundaryNode: state.initializeBoundaryNode,
     }))
   );
 
@@ -66,45 +104,26 @@ export default function BlockDiagramEditor() {
   const { screenToFlowPosition } = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-  // Handle drop event
-  const onDrop = useCallback(
-    (event: DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-
-      // Get the node type and label from the drag event
-      const type = event.dataTransfer.getData(
-        "application/reactflow"
-      ) as NodeType;
-      const label = event.dataTransfer.getData("application/nodeName");
-
-      // Ensure the node type is valid
-      if (typeof type === "undefined" || !type) {
-        return;
-      }
-
-      // Convert screen coordinates to flow coordinates
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-
-      // Create and add the new node using the store action
-      createNode(type, position, label);
-    },
-    [screenToFlowPosition, createNode]
+  // Use useCallback to memoize the onDrop function
+  const handleDrop = useCallback(
+    (event: DragEvent<HTMLDivElement>) =>
+      onDrop(event, createNode, screenToFlowPosition),
+    [createNode, screenToFlowPosition]
   );
+
+  console.log("nodes", nodes);
 
   return (
     <div className="flex h-screen w-full">
       <LeftSidebar />
-      <div className="flex-1 h-full" ref={reactFlowWrapper}>
+      <div className="flex-1 h-full relative" ref={reactFlowWrapper}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onDrop={onDrop}
+          onDrop={handleDrop}
           onDragOver={onDragOver}
           onNodeClick={onNodeClick}
           onPaneClick={onPaneClick}

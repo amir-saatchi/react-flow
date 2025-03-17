@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 import type { NodeType } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Square, Triangle, FileText, Container } from "lucide-react";
@@ -13,11 +13,10 @@ interface NodeItemProps {
   icon: React.ReactNode;
 }
 
-const NodeItem = ({ type, label, icon }: NodeItemProps) => {
+const NodeItem = React.memo(({ type, label, icon }: NodeItemProps) => {
   const { onDragStart } = useStore(
     useShallow((state) => ({ onDragStart: state.onDragStart }))
   );
-
   return (
     <div
       className="flex items-center gap-3 p-3 mb-2 border rounded-md cursor-move hover:bg-accent"
@@ -30,9 +29,9 @@ const NodeItem = ({ type, label, icon }: NodeItemProps) => {
       <span>{label}</span>
     </div>
   );
-};
+});
 
-export default function LeftSidebar() {
+const LeftSidebar = React.memo(() => {
   return (
     <div className="w-64 h-full border-r bg-background">
       <Card className="border-0 shadow-none rounded-none">
@@ -43,7 +42,6 @@ export default function LeftSidebar() {
           <p className="mb-4 text-sm text-muted-foreground">
             Drag and drop nodes onto the canvas
           </p>
-
           <NodeItem
             type="default"
             label="Default"
@@ -64,8 +62,15 @@ export default function LeftSidebar() {
             label="Input/Output"
             icon={<FileText className="w-5 h-5" />}
           />
+          <NodeItem
+            type="group"
+            label="Container"
+            icon={<Container className="w-5 h-5" />}
+          />
         </CardContent>
       </Card>
     </div>
   );
-}
+});
+
+export default LeftSidebar;

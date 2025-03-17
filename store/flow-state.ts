@@ -27,7 +27,10 @@ type FlowState = {
     position: { x: number; y: number },
     label?: string
   ) => void; // Create and add a new node
+  deleteNode: (nodeId: string) => void;
   updateNodeData: (nodeId: string, data: Partial<CustomNode["data"]>) => void; // Update node data
+  setParentNode: (nodeId: string, parentId: string | null) => void;
+  initializeBoundaryNode: () => void;
 };
 
 // Define the FlowSlice type for Zustand
@@ -49,6 +52,7 @@ export const createFlowSlice: StateCreator<
   onNodesChange: (changes) => {
     // Apply changes to nodes (e.g., drag, resize)
     set((state) => {
+      console.log("changes", changes);
       const updatedNodes = applyNodeChanges(changes, state.nodes);
       state.nodes = updatedNodes;
     });
@@ -109,12 +113,69 @@ export const createFlowSlice: StateCreator<
     });
   },
 
+  initializeBoundaryNode: () => {
+    const boundaryNode: CustomNode = {
+      id: "boundary_node",
+      type: "boundary",
+      position: { x: 0, y: 0 },
+      draggable: false,
+      selectable: false,
+      connectable: false,
+      deletable:false,
+      data: {
+        type: "boundary",
+        label: "Boundary",
+        description: "",
+        color: "#ffffff",
+      },
+    };
+
+    set((state) => {
+      state.nodes = [
+        boundaryNode,
+        ...state.nodes.filter((node) => node.id !== "boundary_node"),
+      ];
+    });
+  },
+
   updateNodeData: (nodeId, data) => {
-    // Update the data of a specific node
     set((state) => {
       const node = state.nodes.find((node) => node.id === nodeId);
       if (node) {
-        node.data = { ...node.data, ...data }; // Merge new data with existing data
+        node.data = { ...node.data, ...data };
+
+        if ("parentId" in data) {
+          node.parentId = data.parentId || undefined;
+          if (data.parentId) {
+            node.extent = "parent";
+          } else {
+            delete node.extent;
+          }
+        }
+      }
+    });
+  },
+
+  deleteNode: (nodeId) => {
+    if (nodeId === "boundary_node") {
+      return; // Do not delete the boundary node
+    }
+
+    set((state) => {
+      state.nodes = state.nodes.filter((node) => node.id !== nodeId);
+    });
+  },
+
+  setParentNode: (nodeId, parentId) => {
+    set((state) => {
+      const node = state.nodes.find((node) => node.id === nodeId);
+      if (node) {
+        node.parentId = parentId || undefined; // Assign the parentId
+        if (parentId) {
+          node.extent = "parent"; // Restrict child node movement within the parent
+        } else {
+          delete node.extent; // Remove extent if no parent
+        }
       }
     });
   },

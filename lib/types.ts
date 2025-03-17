@@ -6,7 +6,8 @@ export type NodeType =
   | "process"
   | "decision"
   | "inputOutput"
-  | "group"; // Add 'group' for parent nodes
+  | "group"
+  | "boundary";
 
 export type NodeData = {
   type: NodeType;
