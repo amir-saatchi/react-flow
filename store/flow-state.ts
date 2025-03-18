@@ -109,7 +109,8 @@ export const createFlowSlice: StateCreator<
       },
     };
     set((state) => {
-      state.nodes = [...state.nodes, newNode]; // Add the new node to the nodes array
+      // state.nodes = sortNodes([...state.nodes, newNode]);
+      state.nodes = sortNodesByTypes([...state.nodes, newNode]);
     });
   },
 
@@ -148,7 +149,7 @@ export const createFlowSlice: StateCreator<
 
   setParentNode: (nodeId, parentId) => {
     set((state) => {
-      const node = state.nodes.find((node) => node.id === nodeId);
+      const node = state.nodes.find((node) => node.id === nodeId); // Find The Node
       if (node) {
         node.parentId = parentId || undefined; // Assign the parentId
         if (parentId) {
@@ -157,6 +158,8 @@ export const createFlowSlice: StateCreator<
           delete node.extent; // Remove extent if no parent
         }
       }
+      // Check Parent and Child Order
+      state.nodes = sortParentOrder([...state.nodes]);
     });
   },
 
@@ -167,37 +170,64 @@ export const createFlowSlice: StateCreator<
   },
 });
 
-// setParentNode: (nodeId, parentId) => {
-//   set((state) => {
-//     const node = state.nodes.find((node) => node.id === nodeId);
-//     if (node) {
-//       node.parentId = parentId || undefined; // Assign the parentId
-//       if (parentId) {
-//         node.extent = "parent"; // Restrict child node movement within the parent
-//       } else {
-//         delete node.extent; // Remove extent if no parent
-//       }
-//     }
-//   });
-// },
+// utils functions
+// function sortNodes(nodes: CustomNode[]): CustomNode[] {
+//   return nodes
+//     .sort((a, b) => {
+//       if (a.type === "group" && b.type !== "group") return -1; // Group nodes before other nodes
+//       if (a.type !== "group" && b.type === "group") return 1; // Group nodes before other nodes
 
-// updateNodeData: (nodeId, data) => {
-//   set((state) => {
-//     const nodeIndex = state.nodes.findIndex((node) => node.id === nodeId);
-//     if (nodeIndex !== -1) {
-//       const node = state.nodes[nodeIndex];
-//       console.log("node", { ...node });
-//       console.log("data", data);
-//       node.data = { ...node.data, ...data };
+//       return 0; // Maintain original order for other nodes
+//     })
+//     .sort((a, b) => {
+//       if (a.id === "boundary_node") return -1; // Boundary node always first
+//       if (b.id === "boundary_node") return 1; // Boundary node always first
+//       return 0;
+//     });
+// }
 
-//       if ("parentId" in data) {
-//         state.nodes[nodeIndex].parentId = data.parentId || undefined;
-//         if (data.parentId) {
-//           state.nodes[nodeIndex].extent = "parent";
-//         } else {
-//           delete state.nodes[nodeIndex].extent;
-//         }
-//       }
-//     }
-//   });
-// },
+function sortNodesByTypes(nodes: CustomNode[]): CustomNode[] {
+  const boundaryNode: CustomNode[] = nodes.filter(
+    (node) => node.id === "boundary_node" && node
+  );
+  const groupNodes: CustomNode[] = nodes.filter(
+    (node) => node.type === "group" && node
+  );
+  const otherNodes: CustomNode[] = nodes.filter(
+    (node) => node.type !== "group" && node.id !== "boundary_node" && node
+  );
+  return [...boundaryNode, ...groupNodes, ...otherNodes];
+}
+
+// For sorting parent Child nodes
+function sortParentOrder(nodes: CustomNode[]): CustomNode[] {
+  return nodes.sort((a, b) => {
+    if (a.type === "group" && b.parentId === a.id) return -1;
+    if (b.type === "group" && a.parentId === b.id) return 1;
+    return 0;
+  });
+}
+
+// // For Sorting Parent in Depth
+// function sortInDepth(nodes: CustomNode[]): CustomNode[] {
+//   // First Find Boundary
+//   const boundaryNode: CustomNode[] = nodes.filter(
+//     (node) => node.id === "boundary_node" && node
+//   );
+//   // Get All group Nodes
+//   const groupNodes: CustomNode[] = nodes.filter(
+//     (node) => node.type === "group" && node
+//   );
+//   // Get group Node with no parent
+//   const groupHead: CustomNode[] = groupNodes.filter(
+//     (node) => node.parentId ?? node
+//   );
+
+//   const nodeHeadMap = new Map(groupHead.map(node => [node.id, node]));
+
+//   // Get child group of Head group
+//   const childsOfHead: CustomNode[] = groupHead.filter(node => node.id)
+//   const otherNodes: CustomNode[] = nodes.filter(
+//     (node) => node.type !== "group" && node.id !== "boundary_node" && node
+//   );
+// }

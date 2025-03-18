@@ -111,6 +111,8 @@ export default function BlockDiagramEditor() {
     [createNode, screenToFlowPosition]
   );
 
+  console.log("nodes",nodes)
+
   return (
     <div className="flex h-screen w-full">
       <LeftSidebar />

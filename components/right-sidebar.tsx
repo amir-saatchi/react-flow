@@ -51,7 +51,7 @@ export default function RightSidebar() {
   console.log("Selected Node:", selectedNodeId);
 
   // Filter group nodes for the parent dropdown
-  const groupNodes = nodes.filter((node) => node.type === "group");
+  const groupNodes = nodes.filter((node) => node.type === "group" && node.id !== selectedNodeId);
 
   return (
     <div className="w-64 h-full border-l bg-background">
