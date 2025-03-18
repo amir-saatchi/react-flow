@@ -10,7 +10,7 @@ import { DragEvent } from "react";
 type FlowState = {
   nodes: CustomNode[]; // Array of nodes in the flow
   edges: Edge[]; // Array of edges in the flow
-  selectedNode: CustomNode | null; // Currently selected node
+  selectedNodeId: string | null; // Currently selected node Id
   onNodesChange: (changes: NodeChange<CustomNode>[]) => void; // Handler for node changes
   onEdgesChange: (changes: EdgeChange[]) => void; // Handler for edge changes
   onConnect: (connection: Connection) => void; // Handler for connecting nodes
@@ -46,7 +46,7 @@ export const createFlowSlice: StateCreator<
   // Initial state
   nodes: [], // Empty array of nodes
   edges: [], // Empty array of edges
-  selectedNode: null, // No node selected initially
+  selectedNodeId: null, // No node selected initially
 
   // Actions
   onNodesChange: (changes) => {
@@ -75,12 +75,12 @@ export const createFlowSlice: StateCreator<
 
   onNodeClick: (_: React.MouseEvent, node: CustomNode) => {
     // Set the clicked node as the selected node
-    set({ selectedNode: node });
+    set({ selectedNodeId: node.id });
   },
 
   onPaneClick: () => {
     // Clear the selected node when clicking on the pane
-    set({ selectedNode: null });
+    set({ selectedNodeId: null });
   },
 
   onDragStart: (event, nodeType, nodeName) => {
@@ -143,27 +143,20 @@ export const createFlowSlice: StateCreator<
       state.nodes = state.nodes.map((node) =>
         node.id === nodeId ? { ...node, data: { ...node.data, ...data } } : node
       );
-      console.log(nodeId, data);
-      console.log("nodes", state.nodes);
     });
   },
 
   setParentNode: (nodeId, parentId) => {
     set((state) => {
-      state.nodes = state.nodes.map((node) =>
-        node.id !== nodeId
-          ? node
-          : {
-              ...node,
-              parentId: parentId || undefined,
-              extent: parentId
-                ? "parent"
-                : [
-                    [-100, -100],
-                    [+100, +100],
-                  ],
-            }
-      );
+      const node = state.nodes.find((node) => node.id === nodeId);
+      if (node) {
+        node.parentId = parentId || undefined; // Assign the parentId
+        if (parentId) {
+          node.extent = "parent"; // Restrict child node movement within the parent
+        } else {
+          delete node.extent; // Remove extent if no parent
+        }
+      }
     });
   },
 

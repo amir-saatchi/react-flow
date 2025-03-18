@@ -74,7 +74,7 @@ const selector = (state: StoreType) => ({
   onPaneClick: state.onPaneClick,
   onDragOver: state.onDragOver,
   createNode: state.createNode,
-  selectedNode: state.selectedNode,
+  selectedNodeId: state.selectedNodeId,
   updateNodeData: state.updateNodeData,
   initializeBoundaryNode: state.initializeBoundaryNode,
 });
@@ -95,7 +95,7 @@ export default function BlockDiagramEditor() {
     onPaneClick,
     onDragOver,
     createNode,
-    selectedNode,
+    selectedNodeId,
     updateNodeData,
     initializeBoundaryNode,
   } = useStore(useShallow(selector));

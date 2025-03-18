@@ -17,18 +17,20 @@ import {
 } from "./ui/select";
 
 const selector = (state: StoreType) => ({
-  selectedNode: state.selectedNode,
+  selectedNodeId: state.selectedNodeId,
   updateNodeData: state.updateNodeData,
   setParentNode: state.setParentNode,
   nodes: state.nodes,
 });
 
 export default function RightSidebar() {
-  const { selectedNode, updateNodeData, nodes, setParentNode } = useStore(
+  const { selectedNodeId, updateNodeData, nodes, setParentNode } = useStore(
     useShallow(selector)
   );
 
-  if (!selectedNode) {
+  const selectedNode = nodes.find((node) => node.id === selectedNodeId);
+
+  if (!selectedNodeId || !selectedNode) {
     return (
       <div className="w-64 h-full border-l bg-background">
         <Card className="border-0 shadow-none rounded-none">
@@ -46,7 +48,7 @@ export default function RightSidebar() {
     );
   }
 
-  console.log("Selected Node:", selectedNode);
+  console.log("Selected Node:", selectedNodeId);
 
   // Filter group nodes for the parent dropdown
   const groupNodes = nodes.filter((node) => node.type === "group");
