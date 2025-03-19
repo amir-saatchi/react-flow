@@ -10,6 +10,8 @@ import {
   BackgroundVariant,
   useReactFlow,
   Panel,
+  ColorMode,
+  MiniMap,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -74,9 +76,8 @@ const selector = (state: StoreType) => ({
   onPaneClick: state.onPaneClick,
   onDragOver: state.onDragOver,
   createNode: state.createNode,
-  selectedNodeId: state.selectedNodeId,
-  updateNodeData: state.updateNodeData,
   initializeBoundaryNode: state.initializeBoundaryNode,
+  theme: state.theme,
 });
 
 export default function BlockDiagramEditor() {
@@ -95,9 +96,8 @@ export default function BlockDiagramEditor() {
     onPaneClick,
     onDragOver,
     createNode,
-    selectedNodeId,
-    updateNodeData,
     initializeBoundaryNode,
+    theme,
   } = useStore(useShallow(selector));
 
   // React Flow hook for converting screen coordinates to flow coordinates
@@ -111,12 +111,16 @@ export default function BlockDiagramEditor() {
     [createNode, screenToFlowPosition]
   );
 
-  console.log("nodes",nodes)
+  console.log("nodes", nodes);
+  console.log("zustand theme", theme);
 
   return (
     <div className="flex h-screen w-full">
       <LeftSidebar />
-      <div className="flex-1 h-full relative" ref={reactFlowWrapper}>
+      <div
+        className="flex-1 h-full bg-white text-black dark:bg-black dark:text-white"
+        ref={reactFlowWrapper}
+      >
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -131,7 +135,9 @@ export default function BlockDiagramEditor() {
           fitView
           snapToGrid
           snapGrid={[15, 15]}
+          colorMode={theme as ColorMode}
         >
+          <MiniMap nodeStrokeWidth={3} />
           <Controls /> {/* Add controls for zooming and panning */}
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />{" "}
           {/* Add a dotted background */}

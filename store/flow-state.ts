@@ -54,7 +54,6 @@ export const createFlowSlice: StateCreator<
   onNodesChange: (changes) => {
     // Apply changes to nodes (e.g., drag, resize)
     set((state) => {
-      console.log("changes", changes);
       const updatedNodes = applyNodeChanges(changes, state.nodes);
       state.nodes = updatedNodes;
     });

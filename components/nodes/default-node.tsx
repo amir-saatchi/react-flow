@@ -5,7 +5,7 @@ import type { CustomNode } from "@/lib/types";
 function DefaultNode({ data, isConnectable }: NodeProps<CustomNode>) {
   return (
     <div
-      className="px-4 py-2 border-2 rounded-md shadow-sm border-primary/50"
+      className="px-4 py-2"
       style={{ backgroundColor: data.color || "#ffffff" }}
     >
       <Handle

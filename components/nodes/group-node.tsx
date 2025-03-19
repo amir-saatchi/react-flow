@@ -3,10 +3,13 @@ import { memo } from "react";
 import { NodeResizer, Handle, Position, type NodeProps } from "@xyflow/react";
 import type { CustomNode } from "@/lib/types";
 
-const GroupNode = ({ data, selected }: NodeProps<CustomNode>) => {
+const GroupNode = ({
+  data,
+  selected,
+  isConnectable,
+}: NodeProps<CustomNode>) => {
   return (
-    <div className="px-4 py-2 border-2 rounded-md shadow-sm
-     border-primary/50 min-w-32 min-h-48 w-full h-full">
+    <div className="px-4 py-2 min-w-32 min-h-48 w-full h-full">
       <NodeResizer
         color="#ff0071"
         isVisible={selected}
@@ -14,10 +17,26 @@ const GroupNode = ({ data, selected }: NodeProps<CustomNode>) => {
         minHeight={100}
       />
       <div>{data.label}</div>
-      <Handle type="target" position={Position.Top} />
-      <Handle type="target" position={Position.Left} />
-      <Handle type="target" position={Position.Right} />
-      <Handle type="target" position={Position.Bottom} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        isConnectable={isConnectable}
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        isConnectable={isConnectable}
+      />
     </div>
   );
 };
