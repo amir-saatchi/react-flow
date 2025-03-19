@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Square, Triangle, FileText, Container } from "lucide-react";
 import { useStore } from "@/store/store";
 import { useShallow } from "zustand/shallow";
+import { ModeToggle } from "./mode-toggle";
 
 interface NodeItemProps {
   type: NodeType;
@@ -37,6 +38,7 @@ const LeftSidebar = React.memo(() => {
       <Card className="border-0 shadow-none rounded-none">
         <CardHeader className="px-4 py-3">
           <CardTitle className="text-lg">Node Types</CardTitle>
+          <ModeToggle />
         </CardHeader>
         <CardContent className="px-4 py-2">
           <p className="mb-4 text-sm text-muted-foreground">
