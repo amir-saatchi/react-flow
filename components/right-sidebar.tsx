@@ -15,12 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Button } from "./ui/button";
+import SelectNodeMessage from "./right-sidebar/SelectNodeMessage";
+import SelectedNodeProperties from "./right-sidebar/SelectedNodeProperties";
+import SideBarImportExport from "./right-sidebar/SideBarImportExport";
 
 const selector = (state: StoreType) => ({
   selectedNodeId: state.selectedNodeId,
   updateNodeData: state.updateNodeData,
   setParentNode: state.setParentNode,
   nodes: state.nodes,
+  exportDiagram: state.exportDiagram,
+  importDiagram: state.importDiagram,
 });
 
 export default function RightSidebar() {
@@ -30,99 +36,19 @@ export default function RightSidebar() {
 
   const selectedNode = nodes.find((node) => node.id === selectedNodeId);
 
-  if (!selectedNodeId || !selectedNode) {
-    return (
-      <div className="w-64 h-full border-l bg-background">
-        <Card className="border-0 shadow-none rounded-none">
-          <CardHeader className="px-4 py-3">
-            <CardTitle className="text-lg">Properties</CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 py-2">
-            <div className="flex flex-col items-center justify-center h-40 text-center text-muted-foreground">
-              <Settings className="w-8 h-8 mb-2 opacity-50" />
-              <p>Select a node to edit its properties</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   console.log("Selected Node:", selectedNodeId);
 
   // Filter group nodes for the parent dropdown
-  const groupNodes = nodes.filter((node) => node.type === "group" && node.id !== selectedNodeId);
+  const groupNodes = nodes.filter(
+    (node) => node.type === "group" && node.id !== selectedNodeId
+  );
 
   return (
     <div className="w-64 h-full border-l bg-background">
       <Card className="border-0 shadow-none rounded-none">
-        <CardHeader className="px-4 py-3">
-          <CardTitle className="text-lg">Node Properties</CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 py-2">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="label">Label</Label>
-              <Input
-                id="label"
-                value={selectedNode.data.label}
-                onChange={(e) =>
-                  updateNodeData(selectedNode.id, { label: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={selectedNode.data.description}
-                onChange={(e) =>
-                  updateNodeData(selectedNode.id, {
-                    description: e.target.value,
-                  })
-                }
-                rows={4}
-              />
-            </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <Label htmlFor="parent">Parent Node</Label>
-              <Select
-                value={selectedNode.parentId || "none"}
-                onValueChange={(value) =>
-                  setParentNode(
-                    selectedNode.id,
-                    value === "none" ? null : value
-                  )
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="No parent" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No parent</SelectItem>
-                  {groupNodes.map((node) => (
-                    <SelectItem key={node.id} value={node.id}>
-                      {node.data.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="pt-2">
-              <p className="text-xs text-muted-foreground">
-                Node ID: {selectedNode.id}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Node Type: {selectedNode.type}
-              </p>
-            </div>
-          </div>
-        </CardContent>
+        {<SideBarImportExport />}
+        {!selectedNodeId && <SelectNodeMessage />}
+        {selectedNodeId && <SelectedNodeProperties />}
       </Card>
     </div>
   );

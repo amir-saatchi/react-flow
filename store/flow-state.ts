@@ -31,6 +31,8 @@ type FlowState = {
   updateNodeData: (nodeId: string, data: Partial<CustomNode["data"]>) => void; // Update node data
   setParentNode: (nodeId: string, parentId: string | null) => void;
   initializeBoundaryNode: () => void;
+  exportDiagram: () => string;
+  importDiagram: (data: { nodes: CustomNode[]; edges: Edge[] }) => void;
 };
 
 // Define the FlowSlice type for Zustand
@@ -168,23 +170,21 @@ export const createFlowSlice: StateCreator<
       state.nodes = state.nodes.filter((node) => node.id !== nodeId);
     });
   },
+
+  exportDiagram: () => {
+    const { nodes, edges } = get();
+    return JSON.stringify({ nodes, edges }, null, 2);
+  },
+
+  // Import action
+  importDiagram: (data) => {
+    set({
+      nodes: data.nodes,
+      edges: data.edges,
+      selectedNodeId: null, // Clear selection after import
+    });
+  },
 });
-
-// utils functions
-// function sortNodes(nodes: CustomNode[]): CustomNode[] {
-//   return nodes
-//     .sort((a, b) => {
-//       if (a.type === "group" && b.type !== "group") return -1; // Group nodes before other nodes
-//       if (a.type !== "group" && b.type === "group") return 1; // Group nodes before other nodes
-
-//       return 0; // Maintain original order for other nodes
-//     })
-//     .sort((a, b) => {
-//       if (a.id === "boundary_node") return -1; // Boundary node always first
-//       if (b.id === "boundary_node") return 1; // Boundary node always first
-//       return 0;
-//     });
-// }
 
 function sortNodesByTypes(nodes: CustomNode[]): CustomNode[] {
   const boundaryNode: CustomNode[] = nodes.filter(
@@ -194,7 +194,7 @@ function sortNodesByTypes(nodes: CustomNode[]): CustomNode[] {
     (node) => node.type === "group" && node
   );
   const otherNodes: CustomNode[] = nodes.filter(
-    (node) => node.type !== "group" && node.id !== "boundary_node" && node
+    (node) => node.type !== "group" && node.type !== "boundary" && node
   );
   return [...boundaryNode, ...groupNodes, ...otherNodes];
 }
