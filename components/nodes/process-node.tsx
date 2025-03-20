@@ -7,7 +7,7 @@ function ProcessNode({ data, isConnectable }: NodeProps<CustomNode>) {
     <div
       className="px-4 py-2 border-2 rounded-md shadow-sm border-primary/50"
       style={{
-        backgroundColor: data.color || "#ffffff",
+        backgroundColor:  "#ffffff",
         minWidth: "120px",
         minHeight: "60px",
       }}

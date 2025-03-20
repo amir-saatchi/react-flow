@@ -4,6 +4,7 @@ import { useShallow } from "zustand/shallow";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Separator } from "../ui/separator";
 
 const selector = (state: StoreType) => ({
   selectedNodeId: state.selectedNodeId,
@@ -60,6 +61,7 @@ function SideBarImportExport() {
           {nodes.length > 1 && <Button onClick={handleExport}>Export</Button>}
           <Input type="file" onChange={handleFileUpload} accept=".json" />
         </div>
+        <Separator className="my-4" />
       </CardContent>
     </>
   );

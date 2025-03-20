@@ -17,8 +17,8 @@ export default function RightSidebar() {
   console.log("Selected Node:", selectedNodeId);
 
   return (
-    <div className="w-80 h-full border-l bg-background overflow-scroll">
-      <Card >
+    <div className="w-80 h-full border-l bg-background overflow-scroll no-scrollbar">
+      <Card className="min-h-screen rounded-none" >
         {<SideBarImportExport />}
         {!selectedNodeId && <SelectNodeMessage />}
         {selectedNodeId && <SelectedNodeProperties />}

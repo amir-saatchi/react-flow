@@ -7,7 +7,7 @@ function InputOutputNode({ data, isConnectable }: NodeProps<CustomNode>) {
     <div
       className="relative px-4 py-2 border-2 shadow-sm border-primary/50"
       style={{
-        backgroundColor: data.color || "#ffffff",
+        backgroundColor: "#ffffff",
         minWidth: "140px",
         minHeight: "60px",
         transform: "skewX(-20deg)",

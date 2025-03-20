@@ -10,7 +10,7 @@ function DecisionNode({ data, isConnectable }: NodeProps<CustomNode>) {
     >
       <div
         className="w-full h-full border-2 border-primary/50"
-        style={{ backgroundColor: data.color || "#ffffff" }}
+        style={{ backgroundColor: "#ffffff" }}
       />
       <div
         className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center"
