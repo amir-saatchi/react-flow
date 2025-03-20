@@ -6,7 +6,7 @@ function DefaultNode({ data, isConnectable }: NodeProps<CustomNode>) {
   return (
     <div
       className="px-4 py-2"
-      style={{ backgroundColor: data.color || "#ffffff" }}
+      style={{ backgroundColor: "#ffffff" }}
     >
       <Handle
         type="target"

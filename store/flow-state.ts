@@ -106,7 +106,11 @@ export const createFlowSlice: StateCreator<
         type, // Node type (duplicated in data for convenience)
         label: label || `${type.charAt(0).toUpperCase() + type.slice(1)} Node`, // Default label
         description: "", // Empty description
-        color: "#ffffff", // Default color
+        isAsset: false,
+        csProperties: [],
+        belongTo: "",
+        connectTo: "",
+        name: "",
       },
     };
     set((state) => {
@@ -128,7 +132,11 @@ export const createFlowSlice: StateCreator<
         type: "boundary",
         label: "Boundary",
         description: "",
-        color: "#ffffff",
+        isAsset: false,
+        name: "boundary",
+        csProperties: [],
+        belongTo: "",
+        connectTo: "",
       },
     };
 
