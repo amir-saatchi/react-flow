@@ -3,9 +3,9 @@
 import { Card } from "@/components/ui/card";
 import { StoreType, useStore } from "@/store/store";
 import { useShallow } from "zustand/shallow";
-import SelectNodeMessage from "./right-sidebar/SelectNodeMessage";
-import SelectedNodeProperties from "./right-sidebar/SelectedNodeProperties";
-import SideBarImportExport from "./right-sidebar/SideBarImportExport";
+import SelectNodeMessage from "../right-sidebar/SelectNodeMessage";
+import SelectedNodeProperties from "../right-sidebar/SelectedNodeProperties";
+import SideBarImportExport from "../right-sidebar/SideBarImportExport";
 
 const selector = (state: StoreType) => ({
   selectedNodeId: state.selectedNodeId,

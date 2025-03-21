@@ -30,7 +30,7 @@ type FlowState = {
   deleteNode: (nodeId: string) => void;
   updateNodeData: (nodeId: string, data: Partial<CustomNode["data"]>) => void; // Update node data
   setParentNode: (nodeId: string, parentId: string | null) => void;
-  initializeBoundaryNode: () => void;
+  // initializeBoundaryNode: () => void;
   exportDiagram: () => string;
   importDiagram: (data: { nodes: CustomNode[]; edges: Edge[] }) => void;
 };
@@ -111,6 +111,7 @@ export const createFlowSlice: StateCreator<
         belongTo: "",
         connectTo: "",
         name: "",
+        icon:"",
       },
     };
     set((state) => {
@@ -119,34 +120,35 @@ export const createFlowSlice: StateCreator<
     });
   },
 
-  initializeBoundaryNode: () => {
-    const boundaryNode: CustomNode = {
-      id: "boundary_node",
-      type: "boundary",
-      position: { x: 0, y: 0 },
-      draggable: false,
-      selectable: false,
-      connectable: false,
-      deletable: false,
-      data: {
-        type: "boundary",
-        label: "Boundary",
-        description: "",
-        isAsset: false,
-        name: "boundary",
-        csProperties: [],
-        belongTo: "",
-        connectTo: "",
-      },
-    };
+  // initializeBoundaryNode: () => {
+  //   const boundaryNode: CustomNode = {
+  //     id: "boundary_node",
+  //     type: "boundary",
+  //     position: { x: 0, y: 0 },
+  //     draggable: false,
+  //     selectable: false,
+  //     connectable: false,
+  //     deletable: false,
+  //     data: {
+  //       type: "boundary",
+  //       label: "Boundary",
+  //       description: "",
+  //       isAsset: false,
+  //       name: "boundary",
+  //       csProperties: [],
+  //       belongTo: "",
+  //       connectTo: "",
+  //       icon:"",
+  //     },
+  //   };
 
-    set((state) => {
-      state.nodes = [
-        boundaryNode,
-        ...state.nodes.filter((node) => node.id !== "boundary_node"),
-      ];
-    });
-  },
+  //   set((state) => {
+  //     state.nodes = [
+  //       boundaryNode,
+  //       ...state.nodes.filter((node) => node.id !== "boundary_node"),
+  //     ];
+  //   });
+  // },
 
   updateNodeData: (nodeId, data) => {
     set((state) => {
@@ -194,16 +196,16 @@ export const createFlowSlice: StateCreator<
 });
 
 function sortNodesByTypes(nodes: CustomNode[]): CustomNode[] {
-  const boundaryNode: CustomNode[] = nodes.filter(
-    (node) => node.id === "boundary_node" && node
-  );
+  // const boundaryNode: CustomNode[] = nodes.filter(
+  //   (node) => node.id === "boundary_node" && node
+  // );
   const groupNodes: CustomNode[] = nodes.filter(
     (node) => node.type === "group" && node
   );
   const otherNodes: CustomNode[] = nodes.filter(
     (node) => node.type !== "group" && node.type !== "boundary" && node
   );
-  return [...boundaryNode, ...groupNodes, ...otherNodes];
+  return [...groupNodes, ...otherNodes];
 }
 
 // For sorting parent Child nodes

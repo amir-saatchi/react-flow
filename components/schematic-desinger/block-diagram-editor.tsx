@@ -12,6 +12,8 @@ import {
   Panel,
   ColorMode,
   MiniMap,
+  DefaultEdgeOptions,
+  ViewportPortal,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -20,21 +22,18 @@ import LeftSidebar from "./left-sidebar";
 import RightSidebar from "./right-sidebar";
 import { StoreType, useStore } from "@/store/store";
 import { useShallow } from "zustand/shallow";
-import defaultNode from "./nodes/default-node";
-import processNode from "./nodes/process-node";
-import decisionNode from "./nodes/decision-node";
-import inputOutputNode from "./nodes/input-output-node";
-import boundaryNode from "./nodes/boundary-node";
-import groupNode from "./nodes/group-node";
+import defaultNode from "../nodes/default-node";
+import groupNode from "../nodes/group-node";
+import { ZoomSlider } from "../react-flow-ui/zoom-slider";
+import hardwareNode from "../nodes/hardware-node";
+import usbNode from "../nodes/usb-node";
 
 // Define custom node types
 const nodeTypes = {
   default: defaultNode,
-  process: processNode,
-  decision: decisionNode,
-  inputOutput: inputOutputNode,
   group: groupNode,
-  boundary: boundaryNode,
+  Hardware: hardwareNode,
+  USB: usbNode,
 };
 
 const onDrop = (
@@ -76,14 +75,10 @@ const selector = (state: StoreType) => ({
   onPaneClick: state.onPaneClick,
   onDragOver: state.onDragOver,
   createNode: state.createNode,
-  initializeBoundaryNode: state.initializeBoundaryNode,
   theme: state.theme,
 });
 
 export default function BlockDiagramEditor() {
-  useEffect(() => {
-    initializeBoundaryNode();
-  }, []);
 
   // Zustand Store
   const {
@@ -96,7 +91,6 @@ export default function BlockDiagramEditor() {
     onPaneClick,
     onDragOver,
     createNode,
-    initializeBoundaryNode,
     theme,
   } = useStore(useShallow(selector));
 
@@ -110,6 +104,11 @@ export default function BlockDiagramEditor() {
       onDrop(event, createNode, screenToFlowPosition),
     [createNode, screenToFlowPosition]
   );
+
+  const defaultEdgeOptions: DefaultEdgeOptions = {
+    animated: true,
+    type: "step",
+  };
 
   console.log("nodes", nodes);
   console.log("zustand theme", theme);
@@ -136,18 +135,33 @@ export default function BlockDiagramEditor() {
           snapToGrid
           snapGrid={[15, 15]}
           colorMode={theme as ColorMode}
+          defaultEdgeOptions={defaultEdgeOptions}
         >
-          <MiniMap nodeStrokeWidth={3} />
-          <Controls /> {/* Add controls for zooming and panning */}
-          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />{" "}
-          {/* Add a dotted background */}
-          <Panel position="top-center">
-            <h1 className="text-xl font-bold">Block Diagram Editor</h1>{" "}
-            {/* Add a title */}
-          </Panel>
+          {/* <MiniMap nodeStrokeWidth={3} /> */}
+          {/* <Controls /> Add controls for zooming and panning */}
+          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+          <ZoomSlider position="top-left" />
+
+          <ViewportPortal>
+            <div
+              style={{
+                transform: "translate(30px, 100px)",
+                position: "absolute",
+              }}
+              className="border-2 border-dashed border-red-500 w-[900px] h-[600px]"
+            >
+              Boundary
+            </div>
+          </ViewportPortal>
         </ReactFlow>
       </div>
       <RightSidebar />
     </div>
   );
+}
+
+{
+  /* <Panel position="top-center">
+  <h1 className="text-xl font-bold">Schematic Editor</h1>
+</Panel>; */
 }

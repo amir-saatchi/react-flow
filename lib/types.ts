@@ -1,13 +1,7 @@
 import { Node } from "@xyflow/react";
 
 // Node types
-export type NodeType =
-  | "default"
-  | "process"
-  | "decision"
-  | "inputOutput"
-  | "group"
-  | "boundary";
+export type NodeType = "USB" | "Hardware" | "default" | "group";
 
 export type AssetType =
   | "software"
@@ -35,6 +29,8 @@ export type NodeData = {
   belongTo: string;
   connectTo: string;
   parentId?: string; // For child nodes
+
+  icon: string;
 };
 
 export type CustomNode = Node<NodeData>;

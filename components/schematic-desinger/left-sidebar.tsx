@@ -3,10 +3,10 @@
 import React from "react";
 import type { NodeType } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Square, Triangle, FileText, Container } from "lucide-react";
+import { Square, Triangle, Container } from "lucide-react";
 import { useStore } from "@/store/store";
 import { useShallow } from "zustand/shallow";
-import { ModeToggle } from "./mode-toggle";
+import UsbIcon from "../svg-components/UsbIcon";
 
 interface NodeItemProps {
   type: NodeType;
@@ -38,7 +38,6 @@ const LeftSidebar = React.memo(() => {
       <Card className="border-0 shadow-none rounded-none">
         <CardHeader className="px-4 py-3">
           <CardTitle className="text-lg">Node Types</CardTitle>
-          <ModeToggle />
         </CardHeader>
         <CardContent className="px-4 py-2">
           <p className="mb-4 text-sm text-muted-foreground">
@@ -50,20 +49,11 @@ const LeftSidebar = React.memo(() => {
             icon={<Square className="w-5 h-5" />}
           />
           <NodeItem
-            type="process"
-            label="Process"
-            icon={<Square className="w-5 h-5" />}
-          />
-          <NodeItem
-            type="decision"
-            label="Decision"
+            type="Hardware"
+            label="hardware"
             icon={<Triangle className="w-5 h-5" />}
           />
-          <NodeItem
-            type="inputOutput"
-            label="Input/Output"
-            icon={<FileText className="w-5 h-5" />}
-          />
+          <NodeItem type="USB" label="USB" icon={<UsbIcon />} />
           <NodeItem
             type="group"
             label="Container"

@@ -1,33 +1,32 @@
 import { memo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { CustomNode } from "@/lib/types";
+import UsbIcon from "../svg-components/UsbIcon";
 
-function ProcessNode({ data, isConnectable }: NodeProps<CustomNode>) {
+function UsbNode({ data, isConnectable }: NodeProps<CustomNode>) {
   return (
     <div
       className="px-4 py-2 border-2 rounded-md shadow-sm border-primary/50"
       style={{
-        backgroundColor:  "#ffffff",
         minWidth: "120px",
-        minHeight: "60px",
       }}
     >
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         isConnectable={isConnectable}
       />
-      <div className="font-medium">{data.label}</div>
-      {data.description && (
-        <div className="text-xs text-muted-foreground">{data.description}</div>
-      )}
+      <div className="flex flex-row items-center justify-between">
+        <UsbIcon />
+        <div className="font-medium">{data.label}</div>
+      </div>
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         isConnectable={isConnectable}
       />
     </div>
   );
 }
 
-export default memo(ProcessNode);
+export default memo(UsbNode);
