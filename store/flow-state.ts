@@ -5,6 +5,7 @@ import { StateCreator } from "zustand";
 import { applyNodeChanges, applyEdgeChanges, addEdge } from "@xyflow/react";
 import { StoreType } from "./store";
 import { DragEvent } from "react";
+import { IconName } from "@/components/left-sidebar/IconComponents";
 
 // Define the shape of the Flow state
 type FlowState = {
@@ -19,13 +20,15 @@ type FlowState = {
   onDragStart: (
     event: DragEvent<HTMLDivElement>,
     nodeType: NodeType,
-    nodeName: string
+    nodeName: string,
+    icon: IconName
   ) => void;
   onDragOver: (event: DragEvent<HTMLDivElement>) => void; // Handler for drag-over events
   createNode: (
     type: NodeType,
     position: { x: number; y: number },
-    label?: string
+    label?: string,
+    icon?: IconName
   ) => void; // Create and add a new node
   deleteNode: (nodeId: string) => void;
   updateNodeData: (nodeId: string, data: Partial<CustomNode["data"]>) => void; // Update node data
@@ -84,9 +87,10 @@ export const createFlowSlice: StateCreator<
     set({ selectedNodeId: null });
   },
 
-  onDragStart: (event, nodeType, nodeName) => {
+  onDragStart: (event, nodeType, nodeName,icon) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.setData("application/nodeName", nodeName);
+    event.dataTransfer.setData("application/nodeIcon", icon);
     event.dataTransfer.effectAllowed = "move";
   },
 
@@ -96,7 +100,7 @@ export const createFlowSlice: StateCreator<
     event.dataTransfer.dropEffect = "move";
   },
 
-  createNode: (type, position, label) => {
+  createNode: (type, position, label, icon) => {
     // Create a new node and add it to the nodes array
     const newNode: CustomNode = {
       id: `node_${Date.now()}`, // Unique ID for the node
@@ -111,7 +115,7 @@ export const createFlowSlice: StateCreator<
         belongTo: "",
         connectTo: "",
         name: "",
-        icon:"",
+        icon: icon || null,
       },
     };
     set((state) => {

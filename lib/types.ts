@@ -1,3 +1,4 @@
+import { IconName } from "@/components/left-sidebar/IconComponents";
 import { Node } from "@xyflow/react";
 
 // Node types
@@ -30,7 +31,7 @@ export type NodeData = {
   connectTo: string;
   parentId?: string; // For child nodes
 
-  icon: string;
+  icon: IconName | null;
 };
 
 export type CustomNode = Node<NodeData>;

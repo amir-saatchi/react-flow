@@ -26,14 +26,13 @@ import defaultNode from "../nodes/default-node";
 import groupNode from "../nodes/group-node";
 import { ZoomSlider } from "../react-flow-ui/zoom-slider";
 import hardwareNode from "../nodes/hardware-node";
-import usbNode from "../nodes/usb-node";
+import { IconName } from "../left-sidebar/IconComponents";
 
 // Define custom node types
 const nodeTypes = {
   default: defaultNode,
   group: groupNode,
   Hardware: hardwareNode,
-  USB: usbNode,
 };
 
 const onDrop = (
@@ -41,7 +40,8 @@ const onDrop = (
   createNode: (
     type: NodeType,
     position: { x: number; y: number },
-    label?: string
+    label?: string,
+    icon?: IconName
   ) => void,
   screenToFlowPosition: (position: { x: number; y: number }) => {
     x: number;
@@ -52,6 +52,8 @@ const onDrop = (
   // Get the node type and label from the drag event
   const type = event.dataTransfer.getData("application/reactflow") as NodeType;
   const label = event.dataTransfer.getData("application/nodeName");
+  const icon = event.dataTransfer.getData("application/nodeIcon") as IconName;
+
   // Ensure the node type is valid
   if (typeof type === "undefined" || !type) {
     return;
@@ -62,7 +64,7 @@ const onDrop = (
     y: event.clientY,
   });
   // Create and add the new node using the store action
-  createNode(type, position, label);
+  createNode(type, position, label, icon);
 };
 
 const selector = (state: StoreType) => ({
@@ -79,7 +81,6 @@ const selector = (state: StoreType) => ({
 });
 
 export default function BlockDiagramEditor() {
-
   // Zustand Store
   const {
     nodes,
@@ -160,8 +161,3 @@ export default function BlockDiagramEditor() {
   );
 }
 
-{
-  /* <Panel position="top-center">
-  <h1 className="text-xl font-bold">Schematic Editor</h1>
-</Panel>; */
-}
