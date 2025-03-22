@@ -1,21 +1,25 @@
 import React from "react";
 
-function UsbIcon() {
+interface UsbIconProps {
+  className?: string;
+}
+
+const UsbIcon: React.FC<UsbIconProps> = ({ className }) => {
   return (
     <svg
-      className="w-6 h-6"
+      className={`w-6 h-6 ${className}`}
       width="24"
       height="24"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M11.7773 18.6926V2.78711M11.7773 2.78711L9.65715 4.82628M11.7773 2.78711L13.8974 4.82628M12.5134 15.6026L15.7246 14.9849C17.175 14.7059 18.2241 13.4283 18.2241 11.9409M11.5616 12.8572L8.35046 12.2395M8.35046 12.2395C6.90004 11.9605 5.85095 10.6829 5.85095 9.19548C6.16163 11.0569 6.62649 11.8047 8.35046 12.2395Z"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M4.53241 6.76698C5.26829 6.04642 6.43379 6.04642 7.16967 6.76698C7.92122 7.50287 7.92122 8.72447 7.16967 9.46036C6.43379 10.1809 5.26829 10.1809 4.53241 9.46036C3.78086 8.72447 3.78086 7.50287 4.53241 6.76698Z"
@@ -31,6 +35,6 @@ function UsbIcon() {
       />
     </svg>
   );
-}
+};
 
 export default UsbIcon;
