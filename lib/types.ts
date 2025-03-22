@@ -2,7 +2,7 @@ import { IconName } from "@/components/left-sidebar/IconComponents";
 import { Node } from "@xyflow/react";
 
 // Node types
-export type NodeType = "USB" | "Hardware" | "default" | "group";
+export type NodeType = "Software" | "Hardware" | "default" | "group";
 
 export type AssetType =
   | "software"

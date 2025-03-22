@@ -27,12 +27,14 @@ import groupNode from "../nodes/group-node";
 import { ZoomSlider } from "../react-flow-ui/zoom-slider";
 import hardwareNode from "../nodes/hardware-node";
 import { IconName } from "../left-sidebar/IconComponents";
+import softwareNode from "../nodes/software-node";
 
 // Define custom node types
 const nodeTypes = {
   default: defaultNode,
   group: groupNode,
   Hardware: hardwareNode,
+  Software: softwareNode,
 };
 
 const onDrop = (
@@ -111,9 +113,6 @@ export default function BlockDiagramEditor() {
     type: "step",
   };
 
-  console.log("nodes", nodes);
-  console.log("zustand theme", theme);
-
   return (
     <div className="flex h-screen w-full">
       <LeftSidebar />
@@ -160,4 +159,3 @@ export default function BlockDiagramEditor() {
     </div>
   );
 }
-

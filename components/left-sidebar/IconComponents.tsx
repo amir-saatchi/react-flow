@@ -65,6 +65,10 @@ export const iconComponents = {
   memory: MemoryIcon,
   custom: CustomIcon,
   //software
+  key:KeyIcon,
+  softwareModule:SotwaremoduleIcon,
+  fw:FwIcon,
+  function:FunctionIcon,
 };
 
 export type IconName = keyof typeof iconComponents; // Export the type for icon names

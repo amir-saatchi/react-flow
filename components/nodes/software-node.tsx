@@ -3,7 +3,7 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { CustomNode } from "@/lib/types";
 import { iconComponents } from "../left-sidebar/IconComponents";
 
-function HardwareNode({ data, isConnectable }: NodeProps<CustomNode>) {
+function SoftwareNode({ data, isConnectable }: NodeProps<CustomNode>) {
   const IconComponent = data.icon && iconComponents[data.icon];
   return (
     <div
@@ -30,4 +30,4 @@ function HardwareNode({ data, isConnectable }: NodeProps<CustomNode>) {
   );
 }
 
-export default memo(HardwareNode);
+export default memo(SoftwareNode);
